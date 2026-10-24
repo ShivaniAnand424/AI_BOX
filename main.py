@@ -594,8 +594,7 @@ def load_medications(request: Request):
 # HOME / DASHBOARD
 # --------------------------------------------------
 
-@app.get("/")
-def home(request: Request):
+def dashboard_response(request: Request):
     user = get_current_user(request)
 
     if not user:
@@ -618,9 +617,14 @@ def home(request: Request):
     })
 
 
+@app.get("/")
+def home(request: Request):
+    return dashboard_response(request)
+
+
 @app.get("/dashboard")
 def dashboard_page(request: Request):
-    return RedirectResponse(url="/", status_code=303)
+    return dashboard_response(request)
 
 
 # --------------------------------------------------
