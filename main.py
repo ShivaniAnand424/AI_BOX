@@ -63,9 +63,17 @@ try:
     try:
         firebase_app = firebase_admin.get_app()
     except ValueError:
+        service_account_json = os.environ.get(
+            "FIREBASE_SERVICE_ACCOUNT_JSON"
+        )
         credential_path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
 
-        if credential_path:
+        if service_account_json:
+            service_account_info = json.loads(service_account_json)
+            firebase_credential = credentials.Certificate(
+                service_account_info
+            )
+        elif credential_path:
             service_account_file = Path(credential_path).expanduser()
 
             if not service_account_file.is_file():
@@ -101,8 +109,9 @@ def require_firebase():
             status_code=503,
             detail=(
                 "Firebase Admin is not configured. Set "
-                "GOOGLE_APPLICATION_CREDENTIALS to the Firebase service "
-                "account JSON file path and restart the server."
+                "FIREBASE_SERVICE_ACCOUNT_JSON to the service-account JSON "
+                "contents, or GOOGLE_APPLICATION_CREDENTIALS to its file "
+                "path, then restart the server."
             ),
         )
 
