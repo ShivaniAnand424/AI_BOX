@@ -1,0 +1,348 @@
+
+{% extends "base.html" %}
+
+{% block title %}Dashboard | Smart MedBox{% endblock %}
+{% block breadcrumb %}Dashboard{% endblock %}
+
+{% block content %}
+
+<section class="page-heading">
+    <div>
+        <span class="page-eyebrow">SMART HEALTHCARE DASHBOARD</span>
+        <h1>Your Health, in Perspective.</h1>
+        <p>Manage your medication routine and explore experimental adherence insights.</p>
+    </div>
+    <a href="/schedule" class="btn btn-primary">+ Manage Schedule</a>
+</section>
+
+<!-- Dashboard summary cards -->
+<section class="schedule-summary-grid" aria-label="Dashboard summary">
+    <article class="card schedule-summary-card">
+        <div class="card-body">
+            <span class="text-secondary">Device Status</span>
+            <strong class="schedule-summary-value">
+                {% if device_online %}Online{% else %}Offline{% endif %}
+            </strong>
+            <span class="schedule-summary-note">
+                {% if device_online %}Device status reported by the application{% else %}Device connection unavailable{% endif %}
+            </span>
+        </div>
+    </article>
+
+    <article class="card schedule-summary-card">
+        <div class="card-body">
+            <span class="text-secondary">Adherence Overview</span>
+            <strong class="schedule-summary-value">{{ adherence_score | default('—') }}</strong>
+            <span class="schedule-summary-note">Demo value supplied by the application</span>
+        </div>
+    </article>
+
+    <article class="card schedule-summary-card">
+        <div class="card-body">
+            <span class="text-secondary">Next Dose</span>
+            <strong class="schedule-summary-value">
+                {% if next_dose %}{{ next_dose.scheduled_time | default('Not set') }}{% else %}Not set{% endif %}
+            </strong>
+            <span class="schedule-summary-note">
+                {% if next_dose %}{{ next_dose.medicine_name | default('Medication') }}{% else %}Add a medication schedule{% endif %}
+            </span>
+        </div>
+    </article>
+</section>
+
+<!-- Next medication reminder -->
+<section class="card dashboard-reminder">
+    <div class="card-body">
+        <div class="dashboard-section-header">
+            <div>
+                <span class="section-eyebrow">MEDICATION REMINDER</span>
+                <h2>Your Next Dose</h2>
+                <p>Review the medication details provided by the application.</p>
+            </div>
+            <span class="reminder-icon" aria-hidden="true">◷</span>
+        </div>
+
+        {% if next_dose %}
+        <div style="margin-top: 24px;">
+            <h3 style="margin: 0 0 6px; color: #07552f; font-size: 24px;">
+                {{ next_dose.medicine_name | default('Medication') }}
+            </h3>
+
+            <p class="text-secondary" style="margin: 0 0 18px;">
+                {{ next_dose.dosage | default('Dosage not specified') }}
+            </p>
+
+            <div class="schedule-summary-grid" style="margin-bottom: 0;">
+                <div>
+                    <span class="text-secondary">Scheduled Time</span><br>
+                    <strong>{{ next_dose.scheduled_time | default('Not set') }}</strong>
+                </div>
+                <div>
+                    <span class="text-secondary">Compartment</span><br>
+                    <strong>{{ next_dose.compartment_id | default('Not assigned') }}</strong>
+                </div>
+                <div>
+                    <span class="text-secondary">RFID Tag</span><br>
+                    <strong>{{ next_dose.rfid_tag | default('Not assigned') }}</strong>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <p class="text-secondary" style="margin-top: 20px;">
+            No upcoming medication has been configured.
+        </p>
+        {% endif %}
+
+        <div style="margin-top: 24px;">
+            <a href="/schedule" class="btn btn-primary">View Medication Schedule</a>
+        </div>
+    </div>
+</section>
+
+<!-- Machine Learning Insights -->
+<section class="card dashboard-reminder" id="ml-insights">
+    <div class="card-body">
+        <div class="dashboard-section-header">
+            <div>
+                <span class="section-eyebrow">AI-POWERED ANALYTICS</span>
+                <h2>Adherence Prediction</h2>
+                <p>Experimental insights from the Random Forest model.</p>
+            </div>
+            <span class="reminder-icon" aria-hidden="true">✳</span>
+        </div>
+
+        <p id="ml-status" class="text-secondary" aria-live="polite">
+            Checking machine-learning service...
+        </p>
+
+        <div id="ml-result" hidden>
+            <p>
+                Predicted category:
+                <strong id="ml-prediction">—</strong>
+            </p>
+            <p>
+                Adherent probability:
+                <strong id="ml-adherent">—</strong>
+            </p>
+            <p>
+                Non-adherent probability:
+                <strong id="ml-non-adherent">—</strong>
+            </p>
+        </div>
+
+        <p class="text-secondary">
+            This experimental model uses claims-related data. It does not
+            measure actual doses or replace medical advice.
+        </p>
+
+        <button type="button" class="btn btn-primary" id="ml-test-button">
+            Test Example Prediction
+        </button>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    const status = document.getElementById("ml-status");
+    const result = document.getElementById("ml-result");
+    const button = document.getElementById("ml-test-button");
+
+    if (!status || !result || !button) return;
+
+    async function checkModel() {
+        try {
+            const response = await fetch("/api/ml/status");
+
+            if (!response.ok) {
+                throw new Error("Status endpoint returned HTTP " + response.status);
+            }
+
+            const data = await response.json();
+
+            status.textContent = data.model_loaded
+                ? "Random Forest model is ready."
+                : "Model is unavailable. Check the server terminal.";
+        } catch (error) {
+            status.textContent =
+                "Could not check the ML service. " + error.message;
+        }
+    }
+
+    button.addEventListener("click", async function () {
+        button.disabled = true;
+        status.textContent = "Generating example prediction...";
+        result.hidden = true;
+
+        const example = {
+            AGE: 45,
+            ANNUALCONTRIBUTION: 808284,
+            ANNUALCLAIMAMOUNT: 77480,
+            UNITSTOTAL: 600,
+            GENDER_M: true,
+            SCHEMETYPE_MEDIUM: false,
+            SCHEMETYPE_PREMIUM: false,
+            DIAGNOSIS_HYPERTENSION: true,
+            COVERTYPE_STANDARD: true,
+            COMORBIDITY_NO_COMORBIDITY: false,
+            COMPLICATIONDEVELOPMENT_NO_COMPLICATION: true
+        };
+
+        try {
+            const response = await fetch("/api/ml/predict-adherence", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify(example)
+            });
+
+            let data;
+
+            try {
+                data = await response.json();
+            } catch {
+                throw new Error("The server did not return valid JSON.");
+            }
+
+            if (!response.ok) {
+                throw new Error(
+                    data.detail || "Prediction failed with HTTP " + response.status
+                );
+            }
+
+            const probabilities = data.class_probabilities || {};
+            const adherent = Number(probabilities.ADHERENT);
+            const nonAdherent = Number(probabilities["NON-ADHERENT"]);
+
+            if (
+                !data.prediction ||
+                !Number.isFinite(adherent) ||
+                !Number.isFinite(nonAdherent)
+            ) {
+                throw new Error("The prediction response has an unexpected format.");
+            }
+
+            document.getElementById("ml-prediction").textContent =
+                data.prediction;
+
+            document.getElementById("ml-adherent").textContent =
+                (adherent * 100).toFixed(1) + "%";
+
+            document.getElementById("ml-non-adherent").textContent =
+                (nonAdherent * 100).toFixed(1) + "%";
+
+            result.hidden = false;
+            status.textContent = "Example prediction completed.";
+        } catch (error) {
+            status.textContent = "Prediction error: " + error.message;
+        } finally {
+            button.disabled = false;
+        }
+    });
+
+  
+    checkModel();
+
+    // Isolation Forest
+    const isolationStatus = document.getElementById("isolation-status");
+    const isolationResult = document.getElementById("isolation-result");
+    const isolationButton = document.getElementById("isolation-test-button");
+
+    async function checkIsolationModel() {
+        try {
+            const response = await fetch("/api/ml/isolation-status");
+
+            if (!response.ok) {
+                throw new Error("HTTP " + response.status);
+            }
+
+            const data = await response.json();
+
+            isolationStatus.textContent = data.model_loaded
+                ? "Isolation Forest model is ready."
+                : "Isolation Forest model is unavailable.";
+        } catch (error) {
+            isolationStatus.textContent =
+                "Could not check Isolation Forest: " + error.message;
+        }
+    }
+
+    isolationButton.addEventListener("click", async function () {
+        isolationButton.disabled = true;
+        isolationStatus.textContent = "Analyzing dataset...";
+        isolationResult.hidden = true;
+
+        try {
+            const response = await fetch("/api/ml/detect-anomalies", {
+                method: "POST",
+                headers: { "Accept": "application/json" }
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.detail || "Detection failed.");
+            }
+
+            document.getElementById("isolation-tested").textContent =
+                data.records_tested;
+
+            document.getElementById("isolation-anomalies").textContent =
+                data.anomalies_detected;
+
+            document.getElementById("isolation-normal").textContent =
+                data.normal_records;
+
+            isolationResult.hidden = false;
+            isolationStatus.textContent = "Anomaly detection completed.";
+        } catch (error) {
+            isolationStatus.textContent = "Detection error: " + error.message;
+        } finally {
+            isolationButton.disabled = false;
+        }
+    });
+
+    checkIsolationModel();
+})();
+</script>
+
+
+<!-- Isolation Forest Anomaly Detection -->
+<section class="card dashboard-reminder" id="isolation-insights">
+    <div class="card-body">
+        <div class="dashboard-section-header">
+            <div>
+                <span class="section-eyebrow">UNSUPERVISED MACHINE LEARNING</span>
+                <h2>Unusual Pattern Detection</h2>
+                <p>Detect statistically unusual patterns in the dataset using Isolation Forest.</p>
+            </div>
+            <span class="reminder-icon" aria-hidden="true">⌕</span>
+        </div>
+
+        <p id="isolation-status" class="text-secondary" aria-live="polite">
+            Checking Isolation Forest model...
+        </p>
+
+        <div id="isolation-result" hidden>
+            <p>Records analyzed: <strong id="isolation-tested">—</strong></p>
+            <p>Unusual patterns: <strong id="isolation-anomalies">—</strong></p>
+            <p>Normal patterns: <strong id="isolation-normal">—</strong></p>
+        </div>
+
+        <p class="text-secondary">
+            An anomaly is a statistical outlier, not proof of missed medication
+            or a medical problem. Results are based on the project dataset.
+        </p>
+
+        <button type="button" class="btn btn-primary" id="isolation-test-button">
+            Detect Unusual Patterns
+        </button>
+    </div>
+</section>
+</escape>
+
+{% endblock %}

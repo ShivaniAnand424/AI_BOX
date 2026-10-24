@@ -1,0 +1,724 @@
+
+{% extends "base.html" %}
+
+{% block title %}Medication History | Smart MedBox{% endblock %}
+{% block breadcrumb %}History &amp; Logs{% endblock %}
+
+{% block content %}
+
+<style>
+.history-page {
+    color: #203b2c;
+}
+
+.history-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 28px;
+}
+
+.history-heading .section-eyebrow {
+    display: block;
+    margin-bottom: 8px;
+    color: #16834b;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+.history-heading h1 {
+    margin: 0;
+    color: #075b36;
+    font-size: clamp(28px, 3vw, 38px);
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.history-heading p {
+    margin: 10px 0 0;
+    color: #819087;
+    font-size: 13px;
+}
+
+.history-refresh {
+    flex-shrink: 0;
+    padding: 13px 20px;
+    border: 1px solid #cfe3d5;
+    border-radius: 13px;
+    background: white;
+    color: #075b36;
+    font-weight: 750;
+    cursor: pointer;
+}
+
+.history-refresh:hover {
+    background: #eaf8ef;
+}
+
+.history-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 19px;
+    margin-bottom: 26px;
+}
+
+.history-summary-card {
+    position: relative;
+    min-width: 0;
+    min-height: 195px;
+    padding: 24px;
+    overflow: hidden;
+    border: 1px solid #dceae1;
+    border-radius: 22px;
+    background: #fff;
+    box-shadow: 0 7px 22px rgba(22, 64, 42, .045);
+}
+
+.history-summary-card::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, #078644, #68e69c);
+    content: "";
+}
+
+.history-summary-card::after {
+    position: absolute;
+    right: -35px;
+    bottom: -55px;
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: #effbf3;
+    content: "";
+    pointer-events: none;
+}
+
+.history-icon {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    margin-bottom: 16px;
+    border-radius: 13px;
+    background: #eaf8ef;
+    color: #087844;
+    font-size: 21px;
+}
+
+.history-label,
+.history-value,
+.history-description {
+    position: relative;
+    z-index: 1;
+    display: block;
+}
+
+.history-label {
+    color: #718078;
+    font-size: 13px;
+}
+
+.history-value {
+    margin: 5px 0;
+    color: #075b36;
+    font-size: 30px;
+    font-weight: 850;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+}
+
+.history-description {
+    color: #87948c;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.history-panel {
+    overflow: hidden;
+    border: 1px solid #dceae1;
+    border-radius: 22px;
+    background: #fff;
+    box-shadow: 0 7px 22px rgba(22, 64, 42, .04);
+}
+
+.history-panel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 24px 28px;
+    border-bottom: 1px solid #e8eee9;
+}
+
+.history-panel-heading h2 {
+    margin: 0;
+    color: #203b2c;
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.history-panel-heading p {
+    margin: 7px 0 0;
+    color: #87948c;
+    font-size: 12px;
+}
+
+.history-count {
+    flex-shrink: 0;
+    padding: 8px 13px;
+    border-radius: 30px;
+    background: #edf3ef;
+    color: #496355;
+    font-size: 11px;
+    font-weight: 750;
+}
+
+.history-filters {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(190px, .8fr);
+    gap: 17px;
+    padding: 20px 28px;
+    border-bottom: 1px solid #e8eee9;
+    background: #fbfdfb;
+}
+
+.history-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.history-field label {
+    color: #405247;
+    font-size: 12px;
+    font-weight: 750;
+}
+
+.history-field input,
+.history-field select {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 46px;
+    padding: 11px 14px;
+    border: 1px solid #d8e5dc;
+    border-radius: 11px;
+    outline: none;
+    background: #fff;
+    color: #34473b;
+    font: inherit;
+    font-size: 13px;
+}
+
+.history-field input:focus,
+.history-field select:focus {
+    border-color: #238653;
+    box-shadow: 0 0 0 3px rgba(35, 134, 83, .1);
+}
+
+.history-filter-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    grid-column: 1 / -1;
+}
+
+.history-action {
+    padding: 11px 17px;
+    border: 1px solid #d5e6da;
+    border-radius: 10px;
+    background: #fff;
+    color: #17613c;
+    font-size: 12px;
+    font-weight: 750;
+    cursor: pointer;
+}
+
+.history-action.primary {
+    border-color: #148347;
+    background: #148347;
+    color: #fff;
+}
+
+.history-action:hover {
+    filter: brightness(.97);
+}
+
+.history-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.history-table th {
+    padding: 15px 22px;
+    background: #f7faf8;
+    color: #718078;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .8px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.history-table td {
+    padding: 17px 22px;
+    border-bottom: 1px solid #edf1ee;
+    color: #405247;
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+.history-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.history-table tbody tr:hover {
+    background: #f9fcfa;
+}
+
+.history-medication-name {
+    color: #203b2c;
+    font-weight: 750;
+}
+
+.history-secondary {
+    display: block;
+    margin-top: 5px;
+    color: #87948c;
+    font-size: 11px;
+}
+
+.history-status {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 30px;
+    background: #e5f7eb;
+    color: #247342;
+    font-size: 10px;
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+.history-status.warning {
+    background: #fff3d9;
+    color: #93620d;
+}
+
+.history-status.danger {
+    background: #fde9e9;
+    color: #b33838;
+}
+
+.history-status.neutral {
+    background: #edf1ef;
+    color: #637168;
+}
+
+.history-empty {
+    padding: 55px 22px;
+    text-align: center;
+}
+
+.history-empty[hidden] {
+    display: none !important;
+}
+
+.history-table-wrap[hidden] {
+    display: none !important;
+}
+
+.history-empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 19px;
+    border-radius: 22px;
+    background: #eaf8ef;
+    color: #087844;
+    font-size: 29px;
+}
+
+.history-empty h3 {
+    margin: 0 0 10px;
+    color: #203b2c;
+    font-size: 17px;
+}
+
+.history-empty p {
+    max-width: 440px;
+    margin: 0 auto;
+    color: #87948c;
+    font-size: 12px;
+    line-height: 1.8;
+}
+
+.history-empty .history-empty-note {
+    margin-top: 10px;
+    color: #a06b18;
+}
+
+.history-footer {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 16px 25px;
+    border-top: 1px solid #e8eee9;
+    color: #87948c;
+    font-size: 11px;
+}
+
+@media (max-width: 850px) {
+    .history-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .history-summary-card:last-child {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 600px) {
+    .history-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .history-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .history-summary-card:last-child {
+        grid-column: auto;
+    }
+
+    .history-summary-card {
+        min-height: 160px;
+    }
+
+    .history-panel-heading {
+        align-items: flex-start;
+        padding: 19px;
+    }
+
+    .history-filters {
+        grid-template-columns: 1fr;
+        padding: 18px;
+    }
+
+    .history-filter-actions {
+        grid-column: auto;
+    }
+
+    .history-table th,
+    .history-table td {
+        padding: 13px 15px;
+    }
+}
+</style>
+
+<div class="history-page">
+
+    <!-- Page heading -->
+    <section class="history-heading">
+        <div>
+            <span class="section-eyebrow">YOUR ACTIVITY</span>
+            <h1>Medication History</h1>
+            <p>Review medication records and monitor recorded activity.</p>
+        </div>
+
+        <button
+            type="button"
+            class="history-refresh"
+            onclick="window.location.reload()"
+        >
+            ↻ Refresh View
+        </button>
+    </section>
+
+    <!-- Summary cards -->
+    <section class="history-summary-grid">
+
+        <article class="history-summary-card">
+            <div class="history-icon">▤</div>
+            <span class="history-label">Total Records</span>
+            <strong class="history-value">{{ logs|length }}</strong>
+            <span class="history-description">Available history entries</span>
+        </article>
+
+        <article class="history-summary-card">
+            <div class="history-icon">⚑</div>
+            <span class="history-label">Alerts</span>
+            <strong class="history-value">{{ alerts|length }}</strong>
+            <span class="history-description">Available alert records</span>
+        </article>
+
+        <article class="history-summary-card">
+            <div class="history-icon">✓</div>
+            <span class="history-label">Record Status</span>
+            <strong class="history-value" style="font-size:25px">Available</strong>
+            <span class="history-description">Based on current application data</span>
+        </article>
+
+    </section>
+
+    <!-- Medication activity -->
+    <section class="history-panel">
+
+        <header class="history-panel-heading">
+            <div>
+                <h2>Medication Activity</h2>
+                <p>Search and filter the records currently available.</p>
+            </div>
+
+            <span class="history-count" id="history-count">
+                {{ logs|length }} records
+            </span>
+        </header>
+
+        <!-- Search and status filter -->
+        <div class="history-filters">
+
+            <div class="history-field">
+                <label for="history-search">Search records</label>
+                <input
+                    id="history-search"
+                    type="search"
+                    placeholder="Search medication, status, or details..."
+                    autocomplete="off"
+                >
+            </div>
+
+            <div class="history-field">
+                <label for="history-status">Filter by status</label>
+                <select id="history-status">
+                    <option value="all">All records</option>
+                    <option value="taken">Taken</option>
+                    <option value="missed">Missed</option>
+                    <option value="late">Late</option>
+                    <option value="pending">Pending</option>
+                    <option value="alert">Alert</option>
+                </select>
+            </div>
+
+            <div class="history-filter-actions">
+                <button type="button" class="history-action primary" id="apply-filters">
+                    Apply Filters
+                </button>
+                <button type="button" class="history-action" id="clear-filters">
+                    Clear Filters
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Show actual records only when the backend supplies them -->
+        {% if logs %}
+        <div class="history-table-wrap" id="history-table-wrap">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Medication / Activity</th>
+                        <th>Date &amp; Time</th>
+                        <th>Details</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody id="history-table-body">
+                    {% for log in logs %}
+                    {% set med_name = log.name|default(log.medication_name|default(log.medication|default('Medication activity'))) %}
+                    {% set med_status = log.status|default('Recorded') %}
+                    {% set med_date = log.timestamp|default(log.datetime|default(log.date|default('Not recorded'))) %}
+                    {% set med_details = log.details|default(log.message|default(log.description|default('No additional details'))) %}
+
+                    <tr
+                        class="history-record"
+                        data-search="{{ (med_name ~ ' ' ~ med_status ~ ' ' ~ med_date ~ ' ' ~ med_details)|lower|e }}"
+                        data-status="{{ med_status|lower|e }}"
+                    >
+                        <td>
+                            <span class="history-medication-name">{{ med_name }}</span>
+                            <span class="history-secondary">Record {{ loop.index }}</span>
+                        </td>
+
+                        <td>{{ med_date }}</td>
+
+                        <td>{{ med_details }}</td>
+
+                        <td>
+                            <span class="history-status">{{ med_status }}</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        <!-- Empty state -->
+        <div
+            class="history-empty"
+            id="history-empty"
+            {% if logs %}hidden{% endif %}
+        >
+            <div class="history-empty-icon">▤</div>
+            <h3 id="history-empty-title">No medication records yet</h3>
+            <p id="history-empty-description">
+                Medication activity will appear here when records are provided
+                by the application.
+            </p>
+            <p class="history-empty-note" id="history-empty-note" hidden>
+                Try another search term or select a different status.
+            </p>
+        </div>
+
+        <footer class="history-footer">
+            <span id="history-showing">
+                Showing {{ logs|length }} of {{ logs|length }} records
+            </span>
+            <span>Smart MedBox · Medication History</span>
+        </footer>
+
+    </section>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    const searchInput = document.getElementById("history-search");
+    const statusSelect = document.getElementById("history-status");
+    const applyButton = document.getElementById("apply-filters");
+    const clearButton = document.getElementById("clear-filters");
+
+    const rows = Array.from(document.querySelectorAll(".history-record"));
+    const tableWrap = document.getElementById("history-table-wrap");
+    const emptyState = document.getElementById("history-empty");
+    const emptyTitle = document.getElementById("history-empty-title");
+    const emptyDescription = document.getElementById("history-empty-description");
+    const emptyNote = document.getElementById("history-empty-note");
+    const countLabel = document.getElementById("history-count");
+    const showingLabel = document.getElementById("history-showing");
+
+    if (!searchInput || !statusSelect || !emptyState) return;
+
+    function statusMatches(status, selected) {
+        if (selected === "all") return true;
+
+        status = (status || "").toLowerCase();
+
+        if (selected === "taken") {
+            return /taken|completed|successful|success/.test(status);
+        }
+
+        if (selected === "missed") {
+            return /missed/.test(status);
+        }
+
+        if (selected === "late") {
+            return /late|overdue/.test(status);
+        }
+
+        if (selected === "pending") {
+            return /pending|scheduled/.test(status);
+        }
+
+        if (selected === "alert") {
+            return /alert|warning|error/.test(status);
+        }
+
+        return status.includes(selected);
+    }
+
+    function applyFilters() {
+        const query = searchInput.value.trim().toLowerCase();
+        const selectedStatus = statusSelect.value;
+        let visible = 0;
+
+        rows.forEach(function (row) {
+            const searchText = (row.dataset.search || row.textContent).toLowerCase();
+            const status = row.dataset.status || "";
+
+            const matchesSearch = !query || searchText.includes(query);
+            const matchesStatus = statusMatches(status, selectedStatus);
+            const showRow = matchesSearch && matchesStatus;
+
+            row.hidden = !showRow;
+
+            if (showRow) visible++;
+
+            const badge = row.querySelector(".history-status");
+
+            if (badge) {
+                badge.classList.remove("warning", "danger", "neutral");
+
+                if (/missed|overdue|failed|error/.test(status)) {
+                    badge.classList.add("danger");
+                } else if (/late|pending|alert|warning/.test(status)) {
+                    badge.classList.add("warning");
+                } else if (/recorded|unknown/.test(status)) {
+                    badge.classList.add("neutral");
+                }
+            }
+        });
+
+        const noResults = visible === 0;
+        const hasFilters = Boolean(query) || selectedStatus !== "all";
+
+        emptyState.hidden = !noResults;
+
+        if (tableWrap) {
+            tableWrap.hidden = noResults;
+        }
+
+        if (noResults && hasFilters) {
+            emptyTitle.textContent = "No matching records";
+            emptyDescription.textContent =
+                "No records match your current search and status selection.";
+            emptyNote.hidden = false;
+        } else {
+            emptyTitle.textContent = "No medication records yet";
+            emptyDescription.textContent =
+                "Medication activity will appear here when records are provided by the application.";
+            emptyNote.hidden = true;
+        }
+
+        countLabel.textContent = visible + (visible === 1 ? " record" : " records");
+        showingLabel.textContent =
+            "Showing " + visible + " of " + rows.length + " records";
+    }
+
+    searchInput.addEventListener("input", applyFilters);
+    statusSelect.addEventListener("change", applyFilters);
+    applyButton.addEventListener("click", applyFilters);
+
+    clearButton.addEventListener("click", function () {
+        searchInput.value = "";
+        statusSelect.value = "all";
+        applyFilters();
+        searchInput.focus();
+    });
+
+    applyFilters();
+})();
+</script>
+{% endblock %}

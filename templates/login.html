@@ -1,0 +1,684 @@
+
+{% extends "base.html" %}
+
+{% block title %}Login | Smart MedBox{% endblock %}
+{% block breadcrumb %}Login{% endblock %}
+
+{% block head %}
+<style>
+    .login-page {
+        width: 100%;
+        min-height: 650px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(340px, 0.85fr);
+        align-items: stretch;
+        gap: 28px;
+        padding: 20px 0;
+    }
+
+    .login-welcome {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-width: 0;
+        padding: 45px;
+        overflow: hidden;
+        border-radius: 26px;
+        background: linear-gradient(145deg, #075b36 0%, #0b7545 60%, #159457 100%);
+        color: #fff;
+    }
+
+    .login-welcome::before,
+    .login-welcome::after {
+        position: absolute;
+        content: "";
+        border: 1px solid rgba(255,255,255,.13);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .login-welcome::before {
+        width: 330px;
+        height: 330px;
+        right: -125px;
+        top: -115px;
+    }
+
+    .login-welcome::after {
+        width: 240px;
+        height: 240px;
+        right: -80px;
+        top: -70px;
+    }
+
+    .welcome-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .welcome-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 48px;
+    }
+
+    .welcome-brand-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        border-radius: 15px;
+        background: #d9fbe6;
+        color: #075b36;
+        font-size: 29px;
+        font-weight: 800;
+    }
+
+    .welcome-brand strong {
+        display: block;
+        font-size: 19px;
+        font-weight: 850;
+    }
+
+    .welcome-brand small {
+        display: block;
+        margin-top: 4px;
+        color: #b9e9ca;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+    }
+
+    .welcome-eyebrow {
+        display: inline-block;
+        margin-bottom: 18px;
+        padding: 8px 12px;
+        border: 1px solid rgba(255,255,255,.22);
+        border-radius: 30px;
+        background: rgba(255,255,255,.09);
+        color: #d5f8e2;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 1.3px;
+    }
+
+    .login-welcome h1 {
+        max-width: 490px;
+        margin: 0;
+        color: #fff;
+        font-size: clamp(30px, 3vw, 44px);
+        font-weight: 850;
+        line-height: 1.16;
+        letter-spacing: -1.5px;
+    }
+
+    .welcome-description {
+        max-width: 440px;
+        margin: 20px 0 26px;
+        color: #d7eee0;
+        font-size: 14px;
+        line-height: 1.9;
+    }
+
+    .welcome-features {
+        display: grid;
+        gap: 15px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .welcome-features li {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #f1fff5;
+        font-size: 13px;
+    }
+
+    .welcome-check {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        background: rgba(217,251,230,.16);
+        color: #c9ffda;
+        font-weight: 800;
+    }
+
+    .welcome-footer {
+        margin-top: 42px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255,255,255,.17);
+        color: #c7e8d3;
+        font-size: 11px;
+    }
+
+    .login-form-side {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 0;
+        padding: 18px 0;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 460px;
+        padding: 35px;
+        border: 1px solid #deebe2;
+        border-radius: 24px;
+        background: #fff;
+        box-shadow: 0 12px 38px rgba(21, 64, 41, .07);
+    }
+
+    .login-card-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 52px;
+        height: 52px;
+        margin-bottom: 23px;
+        border-radius: 16px;
+        background: #e8f8ee;
+        color: #087844;
+        font-size: 25px;
+        font-weight: 800;
+    }
+
+    .login-card-eyebrow {
+        margin-bottom: 9px;
+        color: #148347;
+        font-size: 10px;
+        font-weight: 850;
+        letter-spacing: 1.5px;
+    }
+
+    .login-card h2 {
+        margin: 0;
+        color: #153d2b;
+        font-size: 29px;
+        font-weight: 850;
+        letter-spacing: -.8px;
+    }
+
+    .login-card-description {
+        margin: 11px 0 28px;
+        color: #819087;
+        font-size: 12px;
+        line-height: 1.8;
+    }
+
+    .login-field {
+        margin-bottom: 19px;
+    }
+
+    .login-field label {
+        display: block;
+        margin-bottom: 8px;
+        color: #34493c;
+        font-size: 12px;
+        font-weight: 750;
+    }
+
+    .login-field input {
+        box-sizing: border-box;
+        width: 100%;
+        height: 49px;
+        padding: 0 14px;
+        border: 1px solid #d9e5dd;
+        border-radius: 11px;
+        outline: none;
+        background: #fff;
+        color: #24392d;
+        font: inherit;
+        font-size: 13px;
+        transition: border-color .2s, box-shadow .2s;
+    }
+
+    .login-field input:focus {
+        border-color: #16834b;
+        box-shadow: 0 0 0 3px rgba(22,131,75,.1);
+    }
+
+    .login-field input::placeholder {
+        color: #a0aaa4;
+    }
+
+    .password-wrap {
+        position: relative;
+    }
+
+    .password-wrap input {
+        padding-right: 72px;
+    }
+
+    .password-toggle {
+        position: absolute;
+        top: 50%;
+        right: 11px;
+        transform: translateY(-50%);
+        padding: 6px 7px;
+        border: none;
+        border-radius: 6px;
+        background: transparent;
+        color: #167647;
+        font-size: 11px;
+        font-weight: 800;
+        cursor: pointer;
+    }
+
+    .password-toggle:hover {
+        background: #eaf8ef;
+    }
+
+    .login-options {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin: 4px 0 24px;
+    }
+
+    .remember-option {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #64756b;
+        font-size: 12px;
+        cursor: pointer;
+    }
+
+    .remember-option input {
+        width: 15px;
+        height: 15px;
+        accent-color: #148347;
+    }
+
+    .login-submit {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        min-height: 49px;
+        padding: 12px 18px;
+        border: none;
+        border-radius: 12px;
+        background: #148347;
+        color: #fff;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: background .2s, transform .2s;
+    }
+
+    .login-submit:hover {
+        transform: translateY(-1px);
+        background: #096b39;
+    }
+
+    .login-divider {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 23px 0;
+        color: #9aa59e;
+        font-size: 11px;
+    }
+
+    .login-divider::before,
+    .login-divider::after {
+        flex: 1;
+        height: 1px;
+        background: #e8eee9;
+        content: "";
+    }
+
+    .login-register {
+        color: #7c8981;
+        font-size: 12px;
+        text-align: center;
+        line-height: 1.8;
+    }
+
+    .login-register a {
+        color: #087844;
+        font-weight: 800;
+        text-decoration: none;
+    }
+
+    .login-register a:hover {
+        text-decoration: underline;
+    }
+
+    .login-security-note {
+        display: flex;
+        justify-content: center;
+        gap: 7px;
+        margin-top: 24px;
+        color: #89958d;
+        font-size: 10px;
+        text-align: center;
+    }
+
+    @media (max-width: 1050px) {
+        .login-page {
+            grid-template-columns: 1fr;
+        }
+
+        .login-welcome {
+            min-height: 360px;
+            padding: 32px;
+        }
+
+        .welcome-brand {
+            margin-bottom: 30px;
+        }
+
+        .welcome-footer {
+            margin-top: 27px;
+        }
+
+        .login-form-side {
+            padding: 10px 0 25px;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .login-page {
+            gap: 18px;
+            padding: 8px 0;
+        }
+
+        .login-welcome {
+            min-height: auto;
+            padding: 25px;
+            border-radius: 20px;
+        }
+
+        .login-welcome h1 {
+            font-size: 31px;
+        }
+
+        .welcome-description {
+            font-size: 13px;
+        }
+
+        .welcome-features {
+            gap: 12px;
+        }
+
+        .login-card {
+            padding: 25px 20px;
+            border-radius: 20px;
+        }
+
+        .login-card h2 {
+            font-size: 26px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="login-page">
+
+    <!-- Welcome panel -->
+    <section class="login-welcome">
+        <div class="welcome-content">
+
+            <div class="welcome-brand">
+                <div class="welcome-brand-icon">+</div>
+                <div>
+                    <strong>Smart MedBox</strong>
+                    <small>SMART HEALTHCARE</small>
+                </div>
+            </div>
+
+            <span class="welcome-eyebrow">YOUR HEALTH, SIMPLIFIED</span>
+
+            <h1>Your health routine, all in one place.</h1>
+
+            <p class="welcome-description">
+                Access your medication schedule, review activity, and stay
+                organized with your Smart MedBox dashboard.
+            </p>
+
+            <ul class="welcome-features">
+                <li>
+                    <span class="welcome-check">✓</span>
+                    Simple medication organization
+                </li>
+                <li>
+                    <span class="welcome-check">✓</span>
+                    Convenient schedule overview
+                </li>
+                <li>
+                    <span class="welcome-check">✓</span>
+                    Easy access to activity records
+                </li>
+            </ul>
+
+            <div class="welcome-footer">
+                ♥ Your health matters. Every dose, right on time.
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Login form -->
+    <section class="login-form-side">
+        <div class="login-card">
+
+            <div class="login-card-icon">↗</div>
+
+            <div class="login-card-eyebrow">WELCOME BACK</div>
+            <h2>Sign in to your account</h2>
+
+            <p class="login-card-description">
+                Enter your details to continue to your dashboard.
+            </p>
+
+            <form method="post" action="/login" id="login-form">
+
+                <div class="login-field">
+                    <label for="email">Email Address</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="you@example.com"
+                        autocomplete="email"
+                        required
+                    >
+                </div>
+
+                <div class="login-field">
+                    <label for="password">Password</label>
+
+                    <div class="password-wrap">
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+
+                        <button
+                            type="button"
+                            class="password-toggle"
+                            id="toggle-password"
+                            aria-controls="password"
+                            aria-pressed="false"
+                        >
+                            Show
+                        </button>
+                    </div>
+                </div>
+
+                <div class="login-options">
+                    <label class="remember-option">
+                        <input type="checkbox" name="remember">
+                        Remember me
+                    </label>
+                </div>
+
+                <button type="submit" class="login-submit">
+                    Sign In <span aria-hidden="true">→</span>
+                </button>
+
+            </form>
+
+            <div class="login-divider">OR</div>
+
+            <div class="login-register">
+                Don't have an account?
+                <a href="/register">Create Account</a>
+            </div>
+
+            <div class="login-security-note">
+                <span aria-hidden="true">●</span>
+                Smart MedBox · Your health matters
+            </div>
+
+        </div>
+    </section>
+
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+<script type="module">
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import {
+    getAuth,
+    signInWithEmailAndPassword,
+    signOut
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDjhgZhg_RQkea8eToc7neR_9ISKCv2xVM",
+    authDomain: "medication-schedule-manager.firebaseapp.com",
+    projectId: "medication-schedule-manager",
+    storageBucket: "medication-schedule-manager.firebasestorage.app",
+    messagingSenderId: "960476325330",
+    appId: "1:960476325330:web:b4d5511a52c66aabbbd40b",
+    measurementId: "G-F1GMDKKLGG"
+};
+
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+const form = document.getElementById("login-form");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const submitButton = form.querySelector('button[type="submit"]');
+const originalButtonHTML = submitButton.innerHTML;
+
+let message = document.getElementById("login-message");
+
+if (!message) {
+    message = document.createElement("p");
+    message.id = "login-message";
+    message.setAttribute("role", "alert");
+    message.style.cssText =
+        "margin:12px 0;color:#b42318;font-size:13px;line-height:1.6";
+    form.prepend(message);
+}
+
+function showError(text) {
+    message.textContent = text;
+}
+
+form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    message.textContent = "";
+    submitButton.disabled = true;
+    submitButton.textContent = "Signing in...";
+
+    try {
+        const credential = await signInWithEmailAndPassword(
+            auth,
+            emailInput.value.trim(),
+            passwordInput.value
+        );
+
+        const idToken = await credential.user.getIdToken(true);
+
+        const response = await fetch("/auth/session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "same-origin",
+            body: JSON.stringify({ idToken })
+        });
+
+        if (!response.ok) {
+            let detail =
+                "Firebase login succeeded, but the server session failed (" +
+                response.status + ").";
+            try {
+                const body = await response.json();
+                if (typeof body.detail === "string") {
+                    detail = body.detail;
+                }
+            } catch {
+                // Keep the status-based message if the server did not return JSON.
+            }
+            console.error("Session creation failed:", response.status, detail);
+            await signOut(auth);
+            throw new Error(detail);
+        }
+
+        window.location.replace("/");
+    } catch (error) {
+        console.error("Smart MedBox login error:", error);
+
+        const messages = {
+            "auth/invalid-credential":
+                "Incorrect email or password. Please try again.",
+            "auth/invalid-email":
+                "Please enter a valid email address.",
+            "auth/too-many-requests":
+                "Too many attempts. Please wait and try again.",
+            "auth/network-request-failed":
+                "Network error. Check your internet connection."
+        };
+
+        showError(
+            messages[error.code] ||
+            error.message ||
+            "Login failed. Please try again."
+        );
+
+        submitButton.disabled = false;
+        submitButton.innerHTML = originalButtonHTML;
+    }
+});
+
+// Keep the existing Show/Hide password button working.
+const toggleButton = document.getElementById("toggle-password");
+
+if (toggleButton && passwordInput) {
+    toggleButton.addEventListener("click", () => {
+        const show = passwordInput.type === "password";
+        passwordInput.type = show ? "text" : "password";
+        toggleButton.textContent = show ? "Hide" : "Show";
+        toggleButton.setAttribute("aria-pressed", String(show));
+    });
+}
+</script>
+{% endblock %}

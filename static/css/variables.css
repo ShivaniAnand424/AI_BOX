@@ -1,0 +1,200 @@
+
+/* =========================================
+   SMART MEDBOX — COMPLETE DESIGN VARIABLES
+   Rich Green Healthcare Theme
+========================================= */
+
+:root {
+    /* Main brand colors */
+    --primary: #15803d;
+    --primary-dark: #065f2e;
+    --primary-light: #22a447;
+    --primary-hover: #166534;
+    --primary-soft: #dcfce7;
+
+    /* Green shades */
+    --green-950: #052e16;
+    --green-900: #064e2b;
+    --green-800: #08632f;
+    --green-700: #15803d;
+    --green-600: #16a34a;
+    --green-500: #22c55e;
+    --green-400: #4ade80;
+    --green-300: #86efac;
+    --green-200: #bbf7d0;
+    --green-100: #dcfce7;
+    --green-50: #f0fdf4;
+
+    /* Page backgrounds */
+    --body-bg: #edf6ef;
+    --surface: #ffffff;
+    --surface-soft: #f4fbf5;
+    --surface-green: #e0f5e6;
+    --surface-hover: #e9f7ed;
+
+    /* Text colors */
+    --text-primary: #153b27;
+    --text-secondary: #52705e;
+    --text-muted: #789083;
+    --text-on-primary: #ffffff;
+
+    /* Borders */
+    --border: #d4e6d8;
+    --border-strong: #b5d9be;
+
+    /* Status colors */
+    --success: #15803d;
+    --success-bg: #dcfce7;
+    --warning: #b7791f;
+    --warning-bg: #fff5d6;
+    --danger: #dc2626;
+    --danger-bg: #fee2e2;
+    --info: #0369a1;
+    --info-bg: #e0f2fe;
+
+    /* Layout */
+    --sidebar-width: 260px;
+    --topbar-height: 76px;
+    --content-max-width: 1600px;
+
+    /* Spacing */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-12: 48px;
+
+    /* Typography */
+    --font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+    --font-size-xs: 12px;
+    --font-size-sm: 14px;
+    --font-size-base: 16px;
+    --font-size-lg: 18px;
+    --font-size-xl: 22px;
+    --font-size-2xl: 30px;
+    --font-size-3xl: 38px;
+
+    /* Rounded corners */
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --radius-xl: 26px;
+    --radius-full: 999px;
+
+    /* Shadows */
+    --shadow-sm: 0 2px 8px rgba(6, 78, 43, 0.06);
+    --shadow-md: 0 8px 24px rgba(6, 78, 43, 0.09);
+    --shadow-lg: 0 16px 40px rgba(6, 78, 43, 0.13);
+
+    /* Animation */
+    --transition: 180ms ease;
+}
+
+/* =========================================
+   GLOBAL BASE STYLES
+========================================= */
+
+html {
+    scroll-behavior: smooth;
+    min-height: 100%;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--body-bg);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+img,
+svg {
+    max-width: 100%;
+}
+
+a {
+    color: var(--primary);
+    text-decoration: none;
+    transition: color var(--transition);
+}
+
+a:hover {
+    color: var(--primary-dark);
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+::selection {
+    background: var(--green-200);
+    color: var(--green-950);
+}
+
+/* Accessible keyboard focus */
+:focus-visible {
+    outline: 3px solid var(--green-500);
+    outline-offset: 3px;
+}
+
+/* Better default heading colors */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--text-primary);
+    line-height: 1.25;
+}
+
+/* Softer secondary text */
+.text-secondary {
+    color: var(--text-secondary);
+}
+
+.text-muted {
+    color: var(--text-muted);
+}
+
+/* Green scrollbar for supported browsers */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--green-300) var(--green-50);
+}
+
+*::-webkit-scrollbar {
+    width: 9px;
+    height: 9px;
+}
+
+*::-webkit-scrollbar-track {
+    background: var(--green-50);
+}
+
+*::-webkit-scrollbar-thumb {
+    background: var(--green-300);
+    border-radius: var(--radius-full);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: var(--green-600);
+}

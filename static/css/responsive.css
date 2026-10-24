@@ -1,0 +1,242 @@
+
+/* =========================================
+   SMART MEDBOX — RESPONSIVE DESIGN
+========================================= */
+
+/* ---------- Large Screens ---------- */
+
+@media (min-width: 1600px) {
+    .main-content {
+        padding: 36px 42px;
+    }
+
+    .dashboard-grid {
+        gap: 28px;
+    }
+
+    .metric-grid {
+        gap: 24px;
+    }
+}
+
+/* ---------- Laptop and Tablet ---------- */
+
+@media (max-width: 1200px) {
+    :root {
+        --sidebar-width: 235px;
+    }
+
+    .main-content {
+        padding: 25px;
+    }
+
+    .dashboard-grid {
+        gap: 18px;
+    }
+
+    .metric-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .dashboard-hero {
+        padding: 30px;
+    }
+}
+
+/* ---------- Tablet ---------- */
+
+@media (max-width: 900px) {
+    .app-shell {
+        display: block;
+    }
+
+    .sidebar {
+        position: fixed;
+        z-index: 1000;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: min(285px, 85vw);
+        height: 100dvh;
+        overflow-y: auto;
+        transform: translateX(-105%);
+        transition: transform 220ms ease;
+        box-shadow: var(--shadow-lg);
+    }
+
+    .sidebar.open,
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .main-wrapper {
+        width: 100%;
+        min-width: 0;
+        margin-left: 0;
+    }
+
+    .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        padding: 0 22px;
+    }
+
+    .main-content {
+        width: 100%;
+        padding: 24px 22px;
+    }
+
+    .mobile-menu-button {
+        display: inline-flex;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .dashboard-main,
+    .dashboard-side {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .auth-page {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* ---------- Mobile ---------- */
+
+@media (max-width: 600px) {
+    .topbar {
+        min-height: 66px;
+        padding: 0 15px;
+        gap: 10px;
+    }
+
+    .topbar-title {
+        font-size: 17px;
+    }
+
+    .topbar-subtitle {
+        display: none;
+    }
+
+    .topbar-actions {
+        gap: 8px;
+    }
+
+    .main-content {
+        padding: 18px 14px 26px;
+    }
+
+    .page-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .page-heading h1 {
+        font-size: 27px;
+    }
+
+    .dashboard-hero {
+        padding: 25px 20px;
+        border-radius: var(--radius-lg);
+    }
+
+    .dashboard-hero h1 {
+        font-size: 30px;
+    }
+
+    .dashboard-hero p {
+        font-size: 14px;
+    }
+
+    .metric-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 13px;
+    }
+
+    .metric-card {
+        padding: 20px;
+    }
+
+    .dashboard-panel {
+        padding: 19px;
+    }
+
+    .quick-actions-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .quick-action {
+        padding: 15px;
+    }
+
+    .page-footer {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 7px;
+        padding: 18px 14px;
+    }
+
+    .logs-summary-grid,
+    .schedule-summary-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .logs-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .logs-search,
+    .logs-filter,
+    .logs-toolbar select {
+        width: 100%;
+    }
+}
+
+/* ---------- Small Mobile ---------- */
+
+@media (max-width: 380px) {
+    .main-content {
+        padding-right: 11px;
+        padding-left: 11px;
+    }
+
+    .dashboard-hero {
+        padding: 21px 16px;
+    }
+
+    .dashboard-hero h1 {
+        font-size: 26px;
+    }
+
+    .quick-actions-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .metric-value {
+        font-size: 27px;
+    }
+
+    .topbar {
+        padding: 0 11px;
+    }
+}
+
+/* ---------- Reduced Motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+    .sidebar,
+    .metric-card,
+    .quick-action,
+    .dashboard-panel {
+        transition: none !important;
+    }
+}

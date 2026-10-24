@@ -1,0 +1,8 @@
+{
+  "algorithm": "Isolation Forest",
+  "records_tested": 4817,
+  "anomalies_detected": 218,
+  "normal_records": 4599,
+  "contamination_setting": 0.05,
+  "note": "Unsupervised anomaly detection on numeric dataset features. An anomaly is not proof of medication non-adherence or a clinical problem."
+}

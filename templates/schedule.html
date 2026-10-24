@@ -1,0 +1,388 @@
+
+{% extends "base.html" %}
+
+{% block title %}Medication Schedule | Smart MedBox{% endblock %}
+{% block breadcrumb %}Medication Schedule{% endblock %}
+
+{% block head %}
+<style>
+    .schedule-heading-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        width: 100%;
+    }
+
+    .schedule-summary-card {
+        min-height: 250px;
+        justify-content: center;
+    }
+
+    .schedule-summary-card .summary-card-value {
+        font-size: 30px;
+        overflow-wrap: anywhere;
+    }
+
+    .schedule-main-card {
+        margin-top: 30px;
+    }
+
+    .schedule-form-card {
+        margin-top: 24px;
+    }
+
+    .schedule-form-card .card-body {
+        padding: 26px;
+    }
+
+    .schedule-form-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 22px;
+    }
+
+    .schedule-info {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 20px;
+        padding: 14px 16px;
+        border: 1px solid #d6e9dc;
+        border-radius: 12px;
+        background: #f0faf3;
+        color: #286642;
+        font-size: 12px;
+    }
+
+    .schedule-info-icon {
+        font-size: 18px;
+    }
+
+    .schedule-time {
+        color: #205c43;
+        font-weight: 750;
+        white-space: nowrap;
+    }
+
+    .medication-name {
+        color: #203b2c;
+        font-weight: 750;
+    }
+
+    .form-required {
+        color: #bb3939;
+    }
+
+    @media (max-width: 760px) {
+        .schedule-heading-actions {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .schedule-summary-card {
+            min-height: 190px;
+        }
+
+        .schedule-form-card .card-body {
+            padding: 18px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<section class="page-heading">
+    <div class="schedule-form-actions">
+    <button type="submit" class="btn btn-primary">
+        Preview Schedule
+    </button>
+
+    <button type="button" class="btn btn-primary" id="save-medication-button">
+        Save Medication
+    </button>
+
+    <button type="reset" class="btn btn-secondary">
+        Clear Form
+    </button>
+</div>
+</section>
+
+{% if alert %}
+<div class="alert" role="status">
+    {{ alert }}
+</div>
+{% endif %}
+
+<!-- Summary cards -->
+<section class="schedule-summary-grid">
+
+    <article class="schedule-summary-card">
+        <div class="summary-card-icon">▦</div>
+        <div class="summary-card-label">Scheduled Entries</div>
+        <div class="summary-card-value">
+            {{ schedules|length }}
+        </div>
+        <div class="summary-card-description">
+            Medication schedule records
+        </div>
+    </article>
+
+    <article class="schedule-summary-card">
+        <div class="summary-card-icon">✓</div>
+        <div class="summary-card-label">Schedule Status</div>
+        <div class="summary-card-value">Ready</div>
+        <div class="summary-card-description">
+            Review your planned timings
+        </div>
+    </article>
+
+    <article class="schedule-summary-card">
+        <div class="summary-card-icon">◷</div>
+        <div class="summary-card-label">Daily Routine</div>
+        <div class="summary-card-value">Personalized</div>
+        <div class="summary-card-description">
+            Follow your prescribed instructions
+        </div>
+    </article>
+
+</section>
+
+<!-- Medication plan -->
+<section class="card schedule-main-card">
+
+    <header class="card-header">
+        <div>
+            <h2>Your Medication Plan</h2>
+            <p>Medication entries provided by the application.</p>
+        </div>
+
+        <span class="badge badge-success">
+            {{ schedules|length }} entries
+        </span>
+    </header>
+
+    {% if schedules %}
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Medication</th>
+                    <th>Dosage</th>
+                    <th>Scheduled Time</th>
+                    <th>Instructions</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in schedules %}
+                <tr>
+                    <td>
+                        <span class="medication-name">
+                            {{ item.name|default(item.medication_name|default("Medication")) }}
+                        </span>
+                    </td>
+                    <td>
+                        {{ item.dosage|default("Not specified") }}
+                    </td>
+                    <td>
+                        <span class="schedule-time">
+                            {{ item.time|default(item.scheduled_time|default("Not specified")) }}
+                        </span>
+                    </td>
+                    <td>
+                        {{ item.notes|default(item.instructions|default("Follow prescribed instructions")) }}
+                    </td>
+                    <td>
+                        <span class="badge badge-success">Scheduled</span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon">◷</div>
+
+        <h3>No medications scheduled yet</h3>
+
+        <p>
+            Your medication entries will appear here once they are connected
+            to the schedule-saving feature.
+        </p>
+
+        <a href="#add-medication" class="btn btn-primary">
+            Add Your First Medication
+        </a>
+    </div>
+    {% endif %}
+
+</section>
+
+<!-- Add medication form -->
+<section class="card schedule-form-card" id="add-medication">
+
+    <header class="card-header">
+        <div>
+            <span class="section-eyebrow">BUILD YOUR ROUTINE</span>
+            <h2>Add Medication</h2>
+            <p>Enter the details of your medication schedule.</p>
+        </div>
+    </header>
+
+    <div class="card-body">
+
+        <div class="schedule-info">
+            <span class="schedule-info-icon">ⓘ</span>
+            <div>
+                <strong>Schedule preview</strong>
+                <div>
+                    This form currently previews the information only.
+                    Entries are not saved to the database yet.
+                </div>
+            </div>
+        </div>
+
+        <form id="medication-form">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="medication-name">
+                        Medication Name <span class="form-required">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        id="medication-name"
+                        name="medication_name"
+                        placeholder="e.g. Medication name"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="medication-dosage">
+                        Dosage <span class="form-required">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        id="medication-dosage"
+                        name="dosage"
+                        placeholder="e.g. 1 tablet"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="medication-time">
+                        Scheduled Time <span class="form-required">*</span>
+                    </label>
+                    <input
+                        type="time"
+                        id="medication-time"
+                        name="scheduled_time"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="medication-frequency">Frequency</label>
+                    <select id="medication-frequency" name="frequency">
+                        <option value="daily">Daily</option>
+                        <option value="twice_daily">Twice daily</option>
+                        <option value="three_times_daily">Three times daily</option>
+                        <option value="weekly">Weekly</option>
+                    </select>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="medication-notes">Notes or Instructions</label>
+                    <textarea
+                        id="medication-notes"
+                        name="notes"
+                        placeholder="Enter instructions provided by your healthcare professional"
+                        rows="3"
+                    ></textarea>
+                    <span class="form-help">
+                        Follow the instructions provided by your healthcare professional.
+                    </span>
+                </div>
+
+            </div>
+
+            <div class="schedule-form-actions">
+                <button type="submit" class="btn btn-primary">
+                    Preview Schedule
+                </button>
+
+                <button type="reset" class="btn btn-secondary">
+                    Clear Form
+                </button>
+            </div>
+
+            <div id="schedule-preview" class="alert" hidden role="status"></div>
+
+        </form>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    const form = document.getElementById("medication-form");
+    const preview = document.getElementById("schedule-preview");
+
+    if (!form || !preview) return;
+
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        if (!form.reportValidity()) return;
+
+        const name = document.getElementById("medication-name").value.trim();
+        const dosage = document.getElementById("medication-dosage").value.trim();
+        const time = document.getElementById("medication-time").value;
+        const frequency = document.getElementById("medication-frequency");
+        const notes = document.getElementById("medication-notes").value.trim();
+
+        const parts = [
+            "Preview: " + name,
+            "Dosage: " + dosage,
+            "Time: " + time,
+            "Frequency: " + frequency.options[frequency.selectedIndex].text
+        ];
+
+        if (notes) {
+            parts.push("Instructions: " + notes);
+        }
+
+        preview.replaceChildren();
+
+        const heading = document.createElement("strong");
+        heading.textContent = "Medication schedule preview";
+
+        const details = document.createElement("p");
+        details.textContent = parts.join(" · ");
+
+        const note = document.createElement("p");
+        note.textContent = "Preview only — this entry has not been saved.";
+
+        preview.append(heading, details, note);
+        preview.hidden = false;
+        preview.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+
+    form.addEventListener("reset", function () {
+        preview.hidden = true;
+        preview.replaceChildren();
+    });
+})();
+</script>
+{% endblock %}

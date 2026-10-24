@@ -1,0 +1,282 @@
+
+{% extends "base.html" %}
+
+{% block title %}Create Account | Smart MedBox{% endblock %}
+{% block breadcrumb %}Create Account{% endblock %}
+
+{% block head %}
+<style>
+.register-page{display:grid;grid-template-columns:minmax(0,.9fr) minmax(400px,1.1fr);gap:28px;align-items:stretch;padding:18px 0 30px;color:#203b2c}
+.register-welcome{position:relative;display:flex;flex-direction:column;justify-content:center;min-height:590px;padding:38px;overflow:hidden;border-radius:24px;background:linear-gradient(145deg,#064c30,#087447 65%,#159456);color:#fff}
+.register-welcome:before,.register-welcome:after{position:absolute;content:"";border:1px solid rgba(255,255,255,.13);border-radius:50%;pointer-events:none}
+.register-welcome:before{width:300px;height:300px;top:-110px;right:-100px}
+.register-welcome:after{width:220px;height:220px;top:-70px;right:-60px}
+.register-welcome-content{position:relative;z-index:1}
+.register-brand{display:flex;align-items:center;gap:12px;margin-bottom:44px}
+.register-brand-icon{display:flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:14px;background:#d9fbe6;color:#075b36;font-size:28px;font-weight:850}
+.register-brand strong{display:block;font-size:19px;font-weight:850}
+.register-brand small{display:block;margin-top:4px;color:#bce8cb;font-size:10px;font-weight:800;letter-spacing:1.5px}
+.register-eyebrow{display:inline-block;margin-bottom:17px;padding:8px 12px;border:1px solid rgba(255,255,255,.2);border-radius:30px;background:rgba(255,255,255,.08);color:#d5f8e2;font-size:10px;font-weight:800;letter-spacing:1.3px}
+.register-welcome h1{margin:0;color:#fff;font-size:clamp(30px,3vw,43px);font-weight:850;line-height:1.17;letter-spacing:-1.3px}
+.register-welcome-description{margin:18px 0 25px;color:#d7eee0;font-size:13px;line-height:1.9}
+.register-benefits{display:grid;gap:15px;margin:0;padding:0;list-style:none}
+.register-benefits li{display:flex;align-items:center;gap:11px;color:#f1fff5;font-size:12px;line-height:1.6}
+.register-benefit-check{display:flex;flex-shrink:0;align-items:center;justify-content:center;width:25px;height:25px;border-radius:50%;background:rgba(217,251,230,.16);color:#c9ffda;font-weight:850}
+.register-welcome-footer{margin-top:35px;padding-top:19px;border-top:1px solid rgba(255,255,255,.17);color:#c7e8d3;font-size:11px}
+.register-form-side{display:flex;align-items:center;justify-content:center;min-width:0}
+.register-card{width:100%;padding:32px;border:1px solid #dceae1;border-radius:24px;background:#fff;box-shadow:0 10px 32px rgba(21,64,41,.055)}
+.register-card-icon{display:flex;align-items:center;justify-content:center;width:48px;height:48px;margin-bottom:19px;border-radius:14px;background:#eaf8ef;color:#087844;font-size:24px;font-weight:850}
+.register-card-eyebrow{margin-bottom:8px;color:#148347;font-size:10px;font-weight:850;letter-spacing:1.4px}
+.register-card h2{margin:0;color:#153d2b;font-size:29px;font-weight:850;letter-spacing:-.8px}
+.register-card-subtitle{margin:10px 0 25px;color:#819087;font-size:12px;line-height:1.8}
+.register-form{display:grid;gap:17px}
+.register-field{display:flex;flex-direction:column;gap:8px;min-width:0}
+.register-field label{color:#34493c;font-size:12px;font-weight:750}
+.register-field input{box-sizing:border-box;width:100%;height:47px;padding:0 13px;border:1px solid #d9e5dd;border-radius:11px;outline:none;background:#fff;color:#24392d;font:inherit;font-size:13px;transition:border-color .2s,box-shadow .2s}
+.register-field input::placeholder{color:#a0aaa4}
+.register-field input:focus{border-color:#16834b;box-shadow:0 0 0 3px rgba(22,131,75,.1)}
+.register-password-wrap{position:relative}
+.register-password-wrap input{padding-right:68px}
+.register-password-toggle{position:absolute;top:50%;right:10px;transform:translateY(-50%);padding:6px;border:none;border-radius:6px;background:transparent;color:#167647;font-size:11px;font-weight:800;cursor:pointer}
+.register-password-toggle:hover{background:#eaf8ef}
+.register-password-hint{margin-top:-1px;color:#8a978e;font-size:10px;line-height:1.6}
+.register-terms{display:flex;align-items:flex-start;gap:9px;margin:1px 0 2px;color:#68776d;font-size:11px;line-height:1.7}
+.register-terms input{flex-shrink:0;width:15px;height:15px;margin-top:2px;accent-color:#148347}
+.register-message{margin:0 0 2px;padding:12px 14px;border:1px solid #f2c6c6;border-radius:11px;background:#fff4f4;color:#9b2424;font-size:12px;line-height:1.6}
+.register-message.success{border-color:#b9e7c8;background:#f0fff4;color:#096b39}
+.register-message[hidden]{display:none}
+.register-submit{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;min-height:49px;padding:12px 18px;border:none;border-radius:12px;background:#148347;color:#fff;font:inherit;font-size:13px;font-weight:800;cursor:pointer;transition:background .2s,transform .2s}
+.register-submit:hover{transform:translateY(-1px);background:#096b39}
+.register-submit:disabled{opacity:.7;cursor:wait;transform:none}
+.register-submit:focus-visible,.register-password-toggle:focus-visible{outline:3px solid #a5e8bd;outline-offset:3px}
+.register-divider{display:flex;align-items:center;gap:12px;margin:21px 0;color:#9aa59e;font-size:11px}
+.register-divider:before,.register-divider:after{flex:1;height:1px;background:#e8eee9;content:""}
+.register-login-link{color:#7c8981;font-size:12px;line-height:1.8;text-align:center}
+.register-login-link a{color:#087844;font-weight:800;text-decoration:none}
+.register-login-link a:hover{text-decoration:underline}
+.register-security-note{margin-top:22px;color:#89958d;font-size:10px;text-align:center}
+@media(max-width:1000px){.register-page{grid-template-columns:1fr}.register-welcome{min-height:auto;padding:30px}.register-brand{margin-bottom:30px}.register-welcome-footer{margin-top:26px}.register-form-side{padding-bottom:15px}.register-card{max-width:620px}}
+@media(max-width:560px){.register-page{gap:17px;padding-top:8px}.register-welcome{padding:24px;border-radius:20px}.register-welcome h1{font-size:31px}.register-card{padding:24px 19px;border-radius:20px}.register-card h2{font-size:25px}}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="register-page">
+    <section class="register-welcome">
+        <div class="register-welcome-content">
+            <div class="register-brand">
+                <div class="register-brand-icon">+</div>
+                <div>
+                    <strong>Smart MedBox</strong>
+                    <small>SMART HEALTHCARE</small>
+                </div>
+            </div>
+
+            <span class="register-eyebrow">JOIN SMART MEDBOX</span>
+            <h1>Build a simpler medication routine.</h1>
+            <p class="register-welcome-description">
+                Create your account to access your medication dashboard,
+                organize your schedule, and review available activity records.
+            </p>
+
+            <ul class="register-benefits">
+                <li><span class="register-benefit-check">✓</span>A clear dashboard for your routine</li>
+                <li><span class="register-benefit-check">✓</span>Convenient medication scheduling</li>
+                <li><span class="register-benefit-check">✓</span>One place for available records</li>
+            </ul>
+
+            <div class="register-welcome-footer">♥ Smart MedBox · Your health matters</div>
+        </div>
+    </section>
+
+    <section class="register-form-side">
+        <div class="register-card">
+            <div class="register-card-icon">+</div>
+            <div class="register-card-eyebrow">GET STARTED</div>
+            <h2>Create your account</h2>
+            <p class="register-card-subtitle">Enter your details to get started with Smart MedBox.</p>
+
+            <div id="register-message" class="register-message" role="status" aria-live="polite" hidden></div>
+
+            <form class="register-form" id="register-form">
+                <div class="register-field">
+                    <label for="full_name">Full Name</label>
+                    <input type="text" id="full_name" name="full_name" placeholder="Enter your full name" autocomplete="name" maxlength="100" required>
+                </div>
+
+                <div class="register-field">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+                </div>
+
+                <div class="register-field">
+                    <label for="password">Password</label>
+                    <div class="register-password-wrap">
+                        <input type="password" id="password" name="password" placeholder="Create a password" autocomplete="new-password" minlength="8" required>
+                        <button type="button" class="register-password-toggle" data-password-toggle="password" aria-controls="password" aria-pressed="false">Show</button>
+                    </div>
+                    <span class="register-password-hint">Use at least 8 characters.</span>
+                </div>
+
+                <div class="register-field">
+                    <label for="confirm_password">Confirm Password</label>
+                    <div class="register-password-wrap">
+                        <input type="password" id="confirm_password" name="confirm_password" placeholder="Enter your password again" autocomplete="new-password" minlength="8" required>
+                        <button type="button" class="register-password-toggle" data-password-toggle="confirm_password" aria-controls="confirm_password" aria-pressed="false">Show</button>
+                    </div>
+                </div>
+
+                <label class="register-terms">
+                    <input type="checkbox" name="terms" required>
+                    <span>I agree to use Smart MedBox responsibly and understand that it does not replace professional medical advice.</span>
+                </label>
+
+                <button type="submit" class="register-submit" id="register-submit">
+                    Create Account <span aria-hidden="true">→</span>
+                </button>
+            </form>
+
+            <div class="register-divider">OR</div>
+            <div class="register-login-link">Already have an account? <a href="/login">Sign In</a></div>
+            <div class="register-security-note">Smart MedBox · Smart Healthcare</div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="module">
+import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import {
+    getAuth,
+    createUserWithEmailAndPassword,
+    updateProfile,
+    sendEmailVerification
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDjhgZhg_RQkea8eToc7neR_9ISKCv2xVM",
+    authDomain: "medication-schedule-manager.firebaseapp.com",
+    projectId: "medication-schedule-manager",
+    storageBucket: "medication-schedule-manager.firebasestorage.app",
+    messagingSenderId: "960476325330",
+    appId: "1:960476325330:web:b4d5511a52c66aabbbd40b",
+    measurementId: "G-F1GMDKKLGG"
+};
+
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+const form = document.getElementById("register-form");
+const nameInput = document.getElementById("full_name");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const confirmInput = document.getElementById("confirm_password");
+const message = document.getElementById("register-message");
+const submitButton = document.getElementById("register-submit");
+
+function showMessage(text, type = "error") {
+    message.textContent = text;
+    message.className = "register-message " + type;
+    message.hidden = false;
+}
+
+function friendlyError(error) {
+    const messages = {
+        "auth/email-already-in-use": "An account already exists with this email. Please sign in instead.",
+        "auth/invalid-email": "Please enter a valid email address.",
+        "auth/weak-password": "Choose a stronger password with at least 8 characters.",
+        "auth/operation-not-allowed": "Enable Email/Password in Firebase Console → Authentication → Sign-in method.",
+        "auth/network-request-failed": "Network error. Check your internet connection and try again.",
+        "auth/too-many-requests": "Too many attempts. Please wait and try again.",
+        "auth/invalid-api-key": "Firebase API key is invalid. Check your Firebase web app configuration."
+    };
+    return messages[error?.code] || "Account creation failed. Please check your details and try again.";
+}
+
+document.querySelectorAll("[data-password-toggle]").forEach((button) => {
+    button.addEventListener("click", () => {
+        const input = document.getElementById(button.dataset.passwordToggle);
+        if (!input) return;
+        const show = input.type === "password";
+        input.type = show ? "text" : "password";
+        button.textContent = show ? "Hide" : "Show";
+        button.setAttribute("aria-pressed", String(show));
+    });
+});
+
+confirmInput.addEventListener("input", () => confirmInput.setCustomValidity(""));
+
+form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    if (!form.reportValidity()) return;
+
+    if (passwordInput.value !== confirmInput.value) {
+        confirmInput.setCustomValidity("Passwords do not match.");
+        confirmInput.reportValidity();
+        showMessage("Your passwords do not match.");
+        return;
+    }
+    confirmInput.setCustomValidity("");
+
+    submitButton.disabled = true;
+    submitButton.textContent = "Creating account...";
+    message.hidden = true;
+
+    try {
+        const credential = await createUserWithEmailAndPassword(
+            auth,
+            emailInput.value.trim(),
+            passwordInput.value
+        );
+
+        await updateProfile(credential.user, {
+            displayName: nameInput.value.trim()
+        });
+
+        try {
+            await sendEmailVerification(credential.user);
+        } catch (verificationError) {
+            console.warn("Verification email could not be sent:", verificationError);
+        }
+
+        // Exchange the Firebase ID token for a server-side session.
+        const idToken = await credential.user.getIdToken(true);
+        const response = await fetch("/auth/session", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "same-origin",
+            body: JSON.stringify({ idToken })
+        });
+
+        if (!response.ok) {
+            let detail =
+                "Your Firebase account was created, but the website session could not be established (" +
+                response.status + ").";
+            try {
+                const body = await response.json();
+                if (typeof body.detail === "string") {
+                    detail = body.detail;
+                }
+            } catch {
+                // Keep the status-based message if the server did not return JSON.
+            }
+            await auth.signOut();
+            showMessage(detail);
+            submitButton.disabled = false;
+            submitButton.innerHTML = 'Create Account <span aria-hidden="true">→</span>';
+            return;
+        }
+
+        showMessage("Account created successfully. Opening your dashboard...", "success");
+        window.setTimeout(() => window.location.replace("/"), 900);
+    } catch (error) {
+        console.error("Firebase registration error:", error);
+        showMessage(friendlyError(error));
+        submitButton.disabled = false;
+        submitButton.innerHTML = 'Create Account <span aria-hidden="true">→</span>';
+    }
+});
+</script>
+{% endblock %}
